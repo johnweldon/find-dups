@@ -2,13 +2,17 @@ package main
 
 import (
 	"crypto/md5"
+	"flag"
 	"fmt"
 	"os"
 	"path/filepath"
 	"strings"
 )
 
+var root string
+
 func init() {
+	flag.StringVar(&root, "r", ".", "where to start")
 }
 
 type meta struct {
@@ -17,8 +21,9 @@ type meta struct {
 }
 
 func main() {
+	flag.Parse()
 	m := meta{Store: make(map[int64][]string), Hits: make(map[int64]interface{})}
-	err := filepath.Walk("..", makeWalker(&m))
+	err := filepath.Walk(root, makeWalker(&m))
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Error: %v", err)
 		os.Exit(-1)
